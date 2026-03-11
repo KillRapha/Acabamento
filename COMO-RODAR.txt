@@ -1,0 +1,19 @@
+1) Instale Node.js 20.19+ e Docker
+2) Abra a pasta do projeto no terminal
+3) Copie .env.example para .env
+   Linux/macOS: cp .env.example .env
+   PowerShell: Copy-Item .env.example .env
+4) Suba o banco PostgreSQL
+   docker compose up -d
+5) Instale as dependências
+   npm install
+6) Gere o Prisma Client
+   npm run db:generate
+7) Rode a migration inicial
+   npm run db:migrate -- --name init
+8) Popule com dados de exemplo
+   npm run db:seed
+9) Inicie o sistema
+   npm run dev
+10) Acesse no navegador
+   http://localhost:3000

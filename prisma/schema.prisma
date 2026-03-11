@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmployeeRole {
+  THREAD_TRIMMER
+  IRONER
+  SUPERVISOR
+  ADMIN
+}
+
+enum BatchStatus {
+  RECEIVED
+  IN_THREAD_TRIMMING
+  IN_IRONING
+  READY_FOR_DELIVERY
+  DELIVERED
+}
+
+enum StageType {
+  THREAD_TRIMMING
+  IRONING
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  notes     String?
+  batches   Batch[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id                String            @id @default(cuid())
+  name              String
+  role              EmployeeRole
+  phone             String?
+  isActive          Boolean           @default(true)
+  productionEntries ProductionEntry[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model Batch {
+  id               String               @id @default(cuid())
+  code             String               @unique
+  productName      String
+  quantity         Int
+  entryDate        DateTime             @default(now())
+  dueDate          DateTime
+  deliveredAt      DateTime?
+  notes            String?
+  status           BatchStatus          @default(RECEIVED)
+  clientId         String
+  client           Client               @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  stageProgresses  BatchStageProgress[]
+  productionEntries ProductionEntry[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model BatchStageProgress {
+  id             String    @id @default(cuid())
+  stage          StageType
+  completedUnits Int       @default(0)
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  sortOrder      Int
+  batchId        String
+  batch          Batch     @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@unique([batchId, stage])
+}
+
+model ProductionEntry {
+  id         String    @id @default(cuid())
+  stage      StageType
+  quantity   Int
+  workedAt   DateTime  @default(now())
+  notes      String?
+  batchId    String
+  employeeId String
+  batch      Batch     @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@index([batchId, stage])
+  @@index([employeeId, workedAt])
+}
