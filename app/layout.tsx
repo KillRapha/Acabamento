@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import { MobileShell } from "@/components/layout/mobile-shell";
-import "./globals.css";
+import "./globals.css"
+import type { ReactNode } from "react"
+import { MobileNav } from "@/components/navigation/mobile-nav"
 
-export const metadata: Metadata = {
-  title: "JeansFlow Mobile",
-  description: "Controle mobile de lotes, produção e entrega para acabamento de jeans.",
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode
+}) {
   return (
     <html lang="pt-BR">
-      <body>
-        <MobileShell>{children}</MobileShell>
+      <body className="bg-slate-100 text-slate-950">
+        {children}
+        <MobileNav />
       </body>
     </html>
-  );
+  )
 }
